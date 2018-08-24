@@ -1,16 +1,24 @@
 package sunny.smspromocleaner;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.karumi.dexter.Dexter;
@@ -28,39 +36,61 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+import mehdi.sakout.fancybuttons.FancyButton;
 
-    Button bContent, bAddress;
-    FilterMessages fm;
-    String[] row;
-    String[] filter = {"POTONGAN", "diskon", "liburan", "bebas",    "samsung"};
-    String[] filter2 = {"xl-axiata","hiburanasik","xlprioritas","168","spektrat"};
+public class MainActivity extends MainController {
+
+    String keyContent = "keyContent";
+    String keyAddress = "keyAddress";
+    EditText etContent, etAddress;
+    FancyButton bContent, bAddress;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        row = getResources().getStringArray(R.array.row);
-        fm = new FilterMessages();
-        reqPermission();
         init();
+        initControl();
+        reqPermission();
     }
 
-    public void init(){
-        bContent = findViewById(R.id.b_filter_content);
-        bAddress = findViewById(R.id.b_filter_address);
+    @SuppressLint("CommitPrefEdits")
+    public void init() {
 
+        pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        editor = pref.edit();
+
+        etContent = findViewById(R.id.et_content);
+        etAddress = findViewById(R.id.et_address);
+        bContent = findViewById(R.id.btn_content);
+        bAddress = findViewById(R.id.btn_address);
+
+    }
+
+    public void initControl(){
         bContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fm.deleteThreadbyContent(getApplicationContext(),filter,row);
+                String cont = etContent.getText().toString().trim().toLowerCase();
+                editor.putString(keyContent,cont);
+                editor.apply();
+                System.out.println("==cek array " + cont);
+                if(TextUtils.isEmpty(cont))etContent.setError("cannot be empty");
+                toArrayContent(getApplicationContext(),cont);
             }
         });
 
         bAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fm.deleteThreadbyAddress(getApplicationContext(),filter2,row);
+                String add = etAddress.getText().toString().trim().toLowerCase();
+                editor.putString(keyAddress,add);
+                editor.apply();
+                System.out.println("==cek array" + add);
+                if(TextUtils.isEmpty(add)) etAddress.setError("cannot be empty!");
+                toArrayAddress(getApplicationContext(),add);
             }
         });
     }
@@ -80,6 +110,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {/* ... */}
         }).check();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        System.out.println("==onPause");
+        String cont = etContent.getText().toString();
+        editor.putString(keyContent,cont);
+        editor.apply();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        System.out.println("==onResume");
+        String cont = pref.getString(keyContent,null);
+        etContent.setText(cont);
     }
 
     public void cekSms() {

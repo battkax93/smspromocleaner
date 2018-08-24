@@ -14,7 +14,7 @@ public class FilterMessages {
                 Uri.parse("content://sms/"),
                 row, null, null, null);
         filterMsgbyContent(c, filterList, ctx);
-        Toast.makeText(ctx, R.string.success_filter_promo, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(ctx, R.string.success_filter_promo, Toast.LENGTH_SHORT).show();
     }
 
     public void deleteThreadbyAddress(Context ctx, String[] filterList, String[] row) {
@@ -32,34 +32,44 @@ public class FilterMessages {
             String address = c.getString(2);
             String body = c.getString(5).toLowerCase();
             System.out.println("==cek " + id + " , " + address);
-            for (int a = 0; a < filterList.length; a++) {
-                if (body.contains(filterList[a])) {
+            for (String aFilterList : filterList) {
+                if (body.contains(aFilterList)) {
                     x.add("1");
-                    System.out.println("==ketemu" + filterList[a]);
+                    System.out.println("==ketemu" + aFilterList);
                     ctx.getContentResolver().delete(
                             Uri.parse("content://sms/" + id), null, null);
                 }
             }
 
         }
-        System.out.println("==cek " + x.size());
+        String countDeleted = String.valueOf(x.size());
+        Toast.makeText(ctx,"successfully cleaning " + countDeleted +
+                " promo messages from the inbox",Toast.LENGTH_SHORT).show();
     }
 
     public void filterMsgbyAddress(Cursor c, String[] filterList, Context ctx) {
         ArrayList<String> x = new ArrayList<>();
-        while (c.moveToNext()) {
-            int id = c.getInt(0);
-            String address = c.getString(2).toLowerCase();
-            System.out.println("==cek " + id + " , " + address);
-            for (int a = 0; a < filterList.length; a++) {
-                if (address.equals(filterList[a])) {
-                    x.add("1");
-                    System.out.println("==ketemu" + filterList[a]);
-                    ctx.getContentResolver().delete(
-                            Uri.parse("content://sms/" + id), null, null);
+        if (c != null && c.moveToFirst()) {
+            do {
+                int id = c.getInt(0);
+                String address = c.getString(2).toLowerCase();
+                System.out.println("==cek " + id + " , " + address);
+                for (String aFilterList : filterList) {
+                    if (address.equals(aFilterList)) {
+                        x.add("1");
+                        System.out.println("==ketemu" + aFilterList);
+                        ctx.getContentResolver().delete(
+                                Uri.parse("content://sms/inbox/" + id), null, null);
+                    }
                 }
-            }
+
+            } while (c.moveToNext());
         }
-        System.out.println("==cek " + x.size());
+        String countDeleted = String.valueOf(x.size());
+        Toast.makeText(ctx,"successfully cleaning " + countDeleted +
+                " promo messages from the inbox",Toast.LENGTH_SHORT).show();
     }
+
 }
+
+
