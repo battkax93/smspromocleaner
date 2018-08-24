@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -42,8 +43,9 @@ public class MainActivity extends MainController {
 
     String keyContent = "keyContent";
     String keyAddress = "keyAddress";
-    EditText etContent, etAddress;
-    FancyButton bContent, bAddress;
+    EditText etContent;
+    FancyButton bContent;
+    LottieAnimationView lottieAnimationView;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
 
@@ -63,34 +65,25 @@ public class MainActivity extends MainController {
         editor = pref.edit();
 
         etContent = findViewById(R.id.et_content);
-        etAddress = findViewById(R.id.et_address);
         bContent = findViewById(R.id.btn_content);
-        bAddress = findViewById(R.id.btn_address);
+        lottieAnimationView = findViewById(R.id.lottieAnimationView);
+
+        lottieAnimationView.setAnimation("email.json");
+        lottieAnimationView.playAnimation();
+        lottieAnimationView.loop(true);
 
     }
 
-    public void initControl(){
+    public void initControl() {
         bContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String cont = etContent.getText().toString().trim().toLowerCase();
-                editor.putString(keyContent,cont);
+                editor.putString(keyContent, cont);
                 editor.apply();
                 System.out.println("==cek array " + cont);
-                if(TextUtils.isEmpty(cont))etContent.setError("cannot be empty");
-                toArrayContent(getApplicationContext(),cont);
-            }
-        });
-
-        bAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String add = etAddress.getText().toString().trim().toLowerCase();
-                editor.putString(keyAddress,add);
-                editor.apply();
-                System.out.println("==cek array" + add);
-                if(TextUtils.isEmpty(add)) etAddress.setError("cannot be empty!");
-                toArrayAddress(getApplicationContext(),add);
+                if (TextUtils.isEmpty(cont)) etContent.setError("cannot be empty");
+                toArrayContent(getApplicationContext(), cont);
             }
         });
     }
