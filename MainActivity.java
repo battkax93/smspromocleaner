@@ -2,59 +2,48 @@ package sunny.smspromocleaner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.airbnb.lottie.LottieAnimationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.karumi.dexter.listener.single.PermissionListener;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
-import mehdi.sakout.fancybuttons.FancyButton;
+import sunny.smspromocleaner.adapter.ViewPagerAdapter;
+import sunny.smspromocleaner.fragment.AddressFragment;
+import sunny.smspromocleaner.fragment.ContentFragment;
 
 public class MainActivity extends MainController {
 
-    String keyContent = "keyContent";
-    String keyAddress = "keyAddress";
-    EditText etContent;
-    FancyButton bContent;
-    LottieAnimationView lottieAnimationView;
     SharedPreferences pref;
     SharedPreferences.Editor editor;
+
+
+    ContentFragment contentFragment;
+    AddressFragment addressFragment;
+
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    String[] title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        initControl();
         reqPermission();
     }
 
@@ -64,28 +53,48 @@ public class MainActivity extends MainController {
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
 
-        etContent = findViewById(R.id.et_content);
-        bContent = findViewById(R.id.btn_content);
-        lottieAnimationView = findViewById(R.id.lottieAnimationView);
+        viewPager = findViewById(R.id.viewpager);
+        tabLayout = findViewById(R.id.tablayout);
+        title = getResources().getStringArray(R.array.title);
 
-        lottieAnimationView.setAnimation("email.json");
-        lottieAnimationView.playAnimation();
-        lottieAnimationView.loop(true);
+        setupViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);
+        trySetupTabIcons(tabLayout);
 
     }
 
-    public void initControl() {
-        bContent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String cont = etContent.getText().toString().trim().toLowerCase();
-                editor.putString(keyContent, cont);
-                editor.apply();
-                System.out.println("==cek array " + cont);
-                if (TextUtils.isEmpty(cont)) etContent.setError("cannot be empty");
-                toArrayContent(getApplicationContext(), cont);
-            }
-        });
+    public void trySetupTabIcons(TabLayout tl) {
+        try {
+            setupTabIcons(tl);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        contentFragment = new ContentFragment();
+        addressFragment = new AddressFragment();
+        adapter.addFragment(contentFragment, "GROUP");
+        adapter.addFragment(addressFragment, "SHAKE");
+        viewPager.setOffscreenPageLimit(2);
+        viewPager.setAdapter(adapter);
+    }
+
+    private View prepareTabView(int pos) {
+        View view = getLayoutInflater().inflate(R.layout.custom_tab, null);
+        TextView tv_title = view.findViewById(R.id.tv_title);
+        tv_title.setText(title[pos]);
+
+        return view;
+    }
+
+    private void setupTabIcons(TabLayout tl) {
+
+        for (int i = 0; i < title.length; i++) {
+            tl.getTabAt(i).setCustomView(prepareTabView(i));
+        }
+
     }
 
     public void reqPermission() {
@@ -108,18 +117,22 @@ public class MainActivity extends MainController {
     @Override
     protected void onPause() {
         super.onPause();
-        System.out.println("==onPause");
+        /*System.out.println("==onPause");
         String cont = etContent.getText().toString();
+        String add = etAddress.getText().toString();
+        editor.putString(keyAddress,add);
         editor.putString(keyContent,cont);
-        editor.apply();
+        editor.apply();*/
     }
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        System.out.println("==onResume");
+      /*  System.out.println("==onResume");
         String cont = pref.getString(keyContent,null);
+        String add = pref.getString(keyAddress, null);
         etContent.setText(cont);
+        etAddress.setText(add);*/
     }
 
     public void cekSms() {

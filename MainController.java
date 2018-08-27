@@ -3,11 +3,18 @@ package sunny.smspromocleaner;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.airbnb.lottie.LottieAnimationView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -17,42 +24,55 @@ import mehdi.sakout.fancybuttons.FancyButton;
 
 public class MainController extends AppCompatActivity {
 
-    FilterMessages fm;
-    String[] row;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
-    public void showDialogCodeNumber() {
-        final Dialog dialog = new Dialog(this, R.style.PauseDialog);
+    public void showDialogCodeNumber(String i, Context ctx) {
+        final Dialog dialog = new Dialog(ctx, R.style.PauseDialog);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.dialog_content);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
-        FancyButton dialogBtn_save = dialog.findViewById(R.id.btn_save);
-        final EditText etContent = dialog.findViewById(R.id.et_content);
+        final TextView tvCount = dialog.findViewById(R.id.tv_count);
+        final LottieAnimationView ltAnim = dialog.findViewById(R.id.lottieAnimationView2);
 
-        dialogBtn_save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
-        });
+        ltAnim.setAnimation("clear.json");
+        ltAnim.playAnimation();
+        ltAnim.loop(false);
+
+        tvCount.setText(String.format(" %s ", i));
 
         dialog.show();
     }
 
-    public void toArrayContent(Context ctx,String cont){
-        row = getResources().getStringArray(R.array.row);
-        fm = new FilterMessages();
-        String[] content = cont.split(",");
-        fm.deleteThreadbyContent(ctx,content,row);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuItem exitItem = menu.add(0, 1, 0, "Exit");
+        exitItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
-    public void toArrayAddress(Context ctx,String s){
-        row = getResources().getStringArray(R.array.row);
-        fm = new FilterMessages();
-        String add = s.trim();
-        String[] address = add.split(",");
-        fm.deleteThreadbyAddress(ctx, address,row);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case 1:
+                finish();
+                break;
+        }
+
+        return false;
     }
+
+    public void logFirebase(String id, String name, String type, Context ctx){
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(ctx);
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, name);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
 }
