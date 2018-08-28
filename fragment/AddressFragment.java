@@ -64,6 +64,18 @@ public class AddressFragment extends Fragment {
         etAddress.setText(add);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onAttachFragment(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onDetach();
+    }
+
     private void init(View v) {
 
         pref = getContext().getSharedPreferences("MyPref", MODE_PRIVATE);

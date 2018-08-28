@@ -2,16 +2,27 @@ package sunny.smspromocleaner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.karumi.dexter.Dexter;
@@ -25,6 +36,7 @@ import java.util.List;
 import sunny.smspromocleaner.adapter.ViewPagerAdapter;
 import sunny.smspromocleaner.fragment.AddressFragment;
 import sunny.smspromocleaner.fragment.ContentFragment;
+import sunny.smspromocleaner.services.MyJobServices;
 
 public class MainActivity extends MainController {
 
@@ -34,6 +46,10 @@ public class MainActivity extends MainController {
 
     ContentFragment contentFragment;
     AddressFragment addressFragment;
+
+    String keyBC = "keyBC";
+
+    BroadcastReceiver mReceiver;
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
@@ -45,6 +61,8 @@ public class MainActivity extends MainController {
         setContentView(R.layout.activity_main);
         init();
         reqPermission();
+//        scheduler();
+//        registB();
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -101,6 +119,7 @@ public class MainActivity extends MainController {
 
         Dexter.withActivity(this)
                 .withPermissions(
+                        Manifest.permission.RECEIVE_SMS,
                         Manifest.permission.READ_SMS,
                         Manifest.permission.SEND_SMS
                 ).withListener(new MultiplePermissionsListener() {
@@ -114,25 +133,38 @@ public class MainActivity extends MainController {
         }).check();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        /*System.out.println("==onPause");
-        String cont = etContent.getText().toString();
-        String add = etAddress.getText().toString();
-        editor.putString(keyAddress,add);
-        editor.putString(keyContent,cont);
-        editor.apply();*/
+    public void scheduler() {
+        Log.d("==","scheduler");
+
+        int s = 1;
+
+        ComponentName serviceComponent = new ComponentName(getApplicationContext(), MyJobServices.class);
+        JobInfo.Builder builder = new JobInfo.Builder(s, serviceComponent);
+        builder.setRequiresCharging(false);
+        builder.setRequiresDeviceIdle(false);
+
+        //interval
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            builder.setPeriodic(15 * 60 * 1000);
+        } else if (Build.VERSION.SDK_INT >= 24) {
+            builder.setPeriodic(10 * 60 * 1000);
+        } else {
+            builder.setPeriodic(10 * 1000);
+        }
+
+        JobScheduler jobScheduler = (JobScheduler) getApplicationContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        assert jobScheduler != null;
+        jobScheduler.schedule(builder.build());
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-      /*  System.out.println("==onResume");
-        String cont = pref.getString(keyContent,null);
-        String add = pref.getString(keyAddress, null);
-        etContent.setText(cont);
-        etAddress.setText(add);*/
+    public void registB() {
+        System.out.println("==registB");
+        Log.d("==cek", "registB");
+        final IntentFilter it = new IntentFilter();
+        it.addAction("android.provider.Telephony.SMS_RECEIVED");
+        mReceiver = new SmsReceiver();
+        registerReceiver(mReceiver, it);
     }
 
     public void cekSms() {
