@@ -2,7 +2,6 @@ package sunny.smspromocleaner.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -14,7 +13,7 @@ import android.widget.EditText;
 import mehdi.sakout.fancybuttons.FancyButton;
 import sunny.smspromocleaner.FilterMessages;
 import sunny.smspromocleaner.Global;
-import sunny.smspromocleaner.MainController;
+import sunny.smspromocleaner.activity.MainController;
 import sunny.smspromocleaner.R;
 
 import static android.content.Context.MODE_PRIVATE;

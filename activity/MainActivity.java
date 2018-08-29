@@ -1,4 +1,4 @@
-package sunny.smspromocleaner;
+package sunny.smspromocleaner.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -8,23 +8,18 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -33,8 +28,11 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.List;
 
+import sunny.smspromocleaner.R;
+import sunny.smspromocleaner.SmsReceiver;
 import sunny.smspromocleaner.adapter.ViewPagerAdapter;
 import sunny.smspromocleaner.fragment.AddressFragment;
+import sunny.smspromocleaner.fragment.CheckFragment;
 import sunny.smspromocleaner.fragment.ContentFragment;
 import sunny.smspromocleaner.services.MyJobServices;
 
@@ -43,11 +41,9 @@ public class MainActivity extends MainController {
     SharedPreferences pref;
     SharedPreferences.Editor editor;
 
-
     ContentFragment contentFragment;
     AddressFragment addressFragment;
-
-    String keyBC = "keyBC";
+    CheckFragment checkFragment;
 
     BroadcastReceiver mReceiver;
 
@@ -61,6 +57,9 @@ public class MainActivity extends MainController {
         setContentView(R.layout.activity_main);
         init();
         reqPermission();
+
+
+//        test();
 //        scheduler();
 //        registB();
     }
@@ -81,6 +80,7 @@ public class MainActivity extends MainController {
 
     }
 
+
     public void trySetupTabIcons(TabLayout tl) {
         try {
             setupTabIcons(tl);
@@ -91,10 +91,13 @@ public class MainActivity extends MainController {
 
     public void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+
         contentFragment = new ContentFragment();
         addressFragment = new AddressFragment();
-        adapter.addFragment(contentFragment, "GROUP");
-        adapter.addFragment(addressFragment, "SHAKE");
+        checkFragment = new CheckFragment();
+        adapter.addFragment(checkFragment,"CHECK");
+        adapter.addFragment(contentFragment, "CONTENT");
+        adapter.addFragment(addressFragment, "ADDRESS");
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
     }
@@ -115,6 +118,7 @@ public class MainActivity extends MainController {
 
     }
 
+
     public void reqPermission() {
 
         Dexter.withActivity(this)
@@ -133,8 +137,25 @@ public class MainActivity extends MainController {
         }).check();
     }
 
+    public void test() {
+        String arr[] = {"halo", "halo", "apa", "halo"};
+        String[] words = new String[arr.length];
+        int[] counts = new int[arr.length];
+        words[0] = words[0];
+        counts[0] = 1;
+        for (int i = 1, j = 0; i < arr.length; i++) {
+            if (words[j].equals(arr[i])) {
+                counts[j]++;
+            } else {
+                j++;
+                words[j] = arr[i];
+                counts[j] = 1;
+            }
+        }
+    }
+
     public void scheduler() {
-        Log.d("==","scheduler");
+        Log.d("==", "scheduler");
 
         int s = 1;
 

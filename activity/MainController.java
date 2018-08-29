@@ -1,4 +1,4 @@
-package sunny.smspromocleaner;
+package sunny.smspromocleaner.activity;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -17,6 +17,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import mehdi.sakout.fancybuttons.FancyButton;
+import sunny.smspromocleaner.R;
 
 /**
  * Created by Wayan-MECS on 8/24/2018.
