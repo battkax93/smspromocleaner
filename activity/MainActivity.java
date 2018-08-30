@@ -18,6 +18,7 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.karumi.dexter.Dexter;
@@ -28,6 +29,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.List;
 
+import sunny.smspromocleaner.FilterMessages;
 import sunny.smspromocleaner.R;
 import sunny.smspromocleaner.SmsReceiver;
 import sunny.smspromocleaner.adapter.ViewPagerAdapter;
@@ -35,6 +37,8 @@ import sunny.smspromocleaner.fragment.AddressFragment;
 import sunny.smspromocleaner.fragment.CheckFragment;
 import sunny.smspromocleaner.fragment.ContentFragment;
 import sunny.smspromocleaner.services.MyJobServices;
+
+import static sunny.smspromocleaner.R.color.red;
 
 public class MainActivity extends MainController {
 
@@ -58,6 +62,10 @@ public class MainActivity extends MainController {
         init();
         reqPermission();
 
+        String[] row = getResources().getStringArray(R.array.row);
+        FilterMessages fm = new FilterMessages();
+        int all = fm.countAllMsgbyAdd(getApplicationContext(),row);
+        System.out.println("=== cek all msg = " + all);
 
 //        test();
 //        scheduler();
@@ -98,14 +106,21 @@ public class MainActivity extends MainController {
         adapter.addFragment(checkFragment,"CHECK");
         adapter.addFragment(contentFragment, "CONTENT");
         adapter.addFragment(addressFragment, "ADDRESS");
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(adapter);
     }
 
     private View prepareTabView(int pos) {
         View view = getLayoutInflater().inflate(R.layout.custom_tab, null);
-        TextView tv_title = view.findViewById(R.id.tv_title);
-        tv_title.setText(title[pos]);
+        ImageView ivTitle = view.findViewById(R.id.iv_title);
+//        ivTitle.setImageDrawable(title[pos]);
+        if(pos == 0){
+            ivTitle.setImageDrawable(getResources().getDrawable(R.drawable.ic_search));
+        } else if(pos == 1){
+            ivTitle.setImageDrawable(getResources().getDrawable(R.drawable.iccontent));
+        } else {
+            ivTitle.setImageDrawable(getResources().getDrawable(R.drawable.ic_address));
+        }
 
         return view;
     }

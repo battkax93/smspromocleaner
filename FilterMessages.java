@@ -11,12 +11,27 @@ import sunny.smspromocleaner.activity.MainController;
 
 public class FilterMessages {
 
-    public String[] countWordbyContent(Context ctx, String[] row) {
+    public String[] countMsgbyContent(Context ctx, String[] row) {
         Cursor c = ctx.getContentResolver().query(
                 Uri.parse("content://sms/"),
                 row, null, null, null);
 //        calculateWordMsg(c,ctx);
-       return calculateAddMsg(c,ctx);
+       return calculateContMsg(c);
+    }
+
+    public String[] countMsgbyAdd(Context ctx, String[] row) {
+        Cursor c = ctx.getContentResolver().query(
+                Uri.parse("content://sms/"),
+                row, null, null, null);
+//        calculateWordMsg(c,ctx);
+       return calculateAddMsg(c);
+    }
+
+    public int countAllMsgbyAdd(Context ctx, String[] row) {
+        Cursor c = ctx.getContentResolver().query(
+                Uri.parse("content://sms/"),
+                row, null, null, null);
+       return countAllMessage(c);
     }
 
     public void deleteThreadbyContent(Context ctx, String[] filterList, String[] row) {
@@ -75,20 +90,7 @@ public class FilterMessages {
                 " promo messages from the inbox",Toast.LENGTH_SHORT).show();*/
     }
 
-    public void calculateWordMsg(Cursor c, Context ctx) {
-        ArrayList<String> x = new ArrayList<>();
-        while (c.moveToNext()) {
-            int id = c.getInt(0);
-            String address = c.getString(2);
-            String body = c.getString(5).toLowerCase();
-            System.out.println("==cek " + id + " , " + address);
-            x.add(body);
-        }
-        String all = Utils.arrayListToString(x);
-        SortArrayUtil.main(all);
-    }
-
-    public String[] calculateAddMsg (Cursor c, Context ctx) {
+    public String[] calculateAddMsg (Cursor c) {
         ArrayList<String> x = new ArrayList<>();
         while (c.moveToNext()) {
             int id = c.getInt(0);
@@ -99,7 +101,29 @@ public class FilterMessages {
         }
         String all = Utils.arrayListToString(x);
         System.out.println("cek " + all);
-        return SortArrayUtil.main(all);
+        return SortArrayUtil.mainAdd(all);
+    }
+
+    public String[] calculateContMsg (Cursor c) {
+        ArrayList<String> x = new ArrayList<>();
+        while (c.moveToNext()) {
+            int id = c.getInt(0);
+            String address = c.getString(2);
+            String body = c.getString(5).toLowerCase();
+            System.out.println("==cek " + id + " , " + body);
+            x.add(body);
+        }
+        String all = Utils.arrayListToString(x);
+        System.out.println("cek " + all);
+        return SortArrayUtil.mainCont(all);
+    }
+
+    public int countAllMessage (Cursor c){
+        ArrayList<String> x = new ArrayList<>();
+        while (c.moveToNext()) {
+            x.add("1");
+        }
+        return x.size();
     }
 
     public void showDialog(String i, Context ctx) {
