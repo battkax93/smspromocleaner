@@ -21,7 +21,11 @@ public class CheckFragment extends Fragment {
 
     FancyButton bCheck, bCheck2;
     EditText etResult;
-    TextView tvTitle;
+    TextView tvTitle, tvCountAll;
+
+    FilterMessages fm;
+
+    int countAll;
 
     String[] row;
     String[] resFreqAdd;
@@ -41,7 +45,10 @@ public class CheckFragment extends Fragment {
                              Bundle savedInstanceState) {
         View check = inflater.inflate(R.layout.fragment_check, container, false);
 
+        row = getResources().getStringArray(R.array.row);
         init(check);
+        cekInbox();
+
         return check;
     }
 
@@ -63,11 +70,11 @@ public class CheckFragment extends Fragment {
         bCheck = v.findViewById(R.id.btn_calculate);
         bCheck2 = v.findViewById(R.id.btn_calculate2);
         tvTitle = v.findViewById(R.id.tv_title);
+        tvCountAll = v.findViewById(R.id.tv_count_msg);
         etResult = v.findViewById(R.id.et_result);
 
-        row = getResources().getStringArray(R.array.row);
-        FilterMessages fm = new FilterMessages();
-
+        fm = new FilterMessages();
+        countAll = fm.countAllMsgbyAdd(getContext(),row);
 
         bCheck.setOnClickListener((View v1) -> {
             resFreqAdd = fm.countMsgbyAdd(getContext(),row);
@@ -80,6 +87,12 @@ public class CheckFragment extends Fragment {
             etResult.setText(Utils.arrayToString(resFreqAdd).replaceAll("\\[|\\]",""));
             tvTitle.setText(R.string.freq_spam_content);
         });
+    }
+
+    public void cekInbox(){
+        fm = new FilterMessages();
+        countAll = fm.countAllMsgbyAdd(getContext(),row);
+        tvCountAll.setText(String.valueOf(countAll));
     }
 
 }

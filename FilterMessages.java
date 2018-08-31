@@ -74,11 +74,12 @@ public class FilterMessages {
         while (c.moveToNext()) {
             int id = c.getInt(0);
             String address = c.getString(2);
+            String date = c.getString(4);
             System.out.println("==cek " + id + " , " + address);
             for (String aFilterList : filterList) {
                 if (address != null && address.equalsIgnoreCase(aFilterList.trim().toLowerCase())) {
                     x.add("1");
-                    System.out.println("==ketemu" + aFilterList);
+                    System.out.println("date= " + date);
                     ctx.getContentResolver().delete(
                             Uri.parse("content://sms/inbox/" + id), null, null);
                 }

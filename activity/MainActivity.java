@@ -16,6 +16,7 @@ import android.os.Build;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -78,6 +79,11 @@ public class MainActivity extends MainController {
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         editor = pref.edit();
 
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.abs_layout);
+        getSupportActionBar().setTitle("SMS SPAM CLEANER");
+        getSupportActionBar().setElevation(0);
+
         viewPager = findViewById(R.id.viewpager);
         tabLayout = findViewById(R.id.tablayout);
         title = getResources().getStringArray(R.array.title);
@@ -87,7 +93,6 @@ public class MainActivity extends MainController {
         trySetupTabIcons(tabLayout);
 
     }
-
 
     public void trySetupTabIcons(TabLayout tl) {
         try {
