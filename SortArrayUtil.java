@@ -9,9 +9,11 @@ import java.util.Arrays;
 
 public class SortArrayUtil {
 
-    public static String[] mainAdd(String x) {
+    public static String[] mainAdd(String x, int allMsg) {
         int pAdd = Global.PARAMS_COUNT_ADD;
         String[] keys;
+
+        int pAdd2 = pAdd * allMsg / 100;
 
         keys = x.split(",");
         String[] uniqueKeys;
@@ -28,9 +30,9 @@ public class SortArrayUtil {
                     if (key.equals(s)) count++;
                 }
                 System.out.println("Count of [" + key + "] is : " + count);
-                if (count > pAdd
-                        ) freqWord.add(key);
+                if (count > pAdd2) freqWord.add(key);
                 count = 0;
+
             }
         }
 
@@ -40,10 +42,14 @@ public class SortArrayUtil {
         return cAll;
     }
 
-    public static String[] mainCont(String x) {
+    public static String[] mainCont(String x, int allMsg) {
+
         int pCont = Global.PARAMS_COUNT_CONT;
         int pContLength = Global.PARAMS_LENGTH_CONT;
         String[] keys;
+
+        int pCont2 = pCont * allMsg / 100;
+        System.out.println("dpt3  " + pCont2);
 
         keys = x.split(" ");
         String[] uniqueKeys;
@@ -54,13 +60,15 @@ public class SortArrayUtil {
         System.out.println("count " + Arrays.asList(uniqueKeys).toString());
         System.out.println("count " + Arrays.asList(keys).toString());
 
+
+
         for (String key : uniqueKeys) {
             if (key != null) {
                 for (String s : keys) {
                     if (key.equals(s)) count++;
                 }
                 System.out.println("Count of [" + key + "] is : " + count);
-                if (count > pCont && key.length() >= pContLength) freqWord.add(key);
+                if (pCont2 > 1 && count > pCont2 && key.length() >= pContLength) freqWord.add(key);
                 count = 0;
             }
         }

@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +22,11 @@ public class CheckFragment extends Fragment {
 
     FancyButton bCheck, bCheck2;
     EditText etResult;
-    TextView tvTitle, tvCountAll;
+    TextView tvTitle, tvCountAll, tvInboxToday;
 
     FilterMessages fm;
 
-    int countAll;
+    int countAll, countToday;
 
     String[] row;
     String[] resFreqAdd;
@@ -70,20 +71,18 @@ public class CheckFragment extends Fragment {
         bCheck = v.findViewById(R.id.btn_calculate);
         bCheck2 = v.findViewById(R.id.btn_calculate2);
         tvTitle = v.findViewById(R.id.tv_title);
+        tvInboxToday = v.findViewById(R.id.tv_inbox_today);
         tvCountAll = v.findViewById(R.id.tv_count_msg);
         etResult = v.findViewById(R.id.et_result);
 
-        fm = new FilterMessages();
-        countAll = fm.countAllMsgbyAdd(getContext(),row);
-
         bCheck.setOnClickListener((View v1) -> {
-            resFreqAdd = fm.countMsgbyAdd(getContext(),row);
+            resFreqAdd = fm.countMsgbyAdd(getContext(),row,countAll);
             etResult.setText(Utils.arrayToString(resFreqAdd).replaceAll("\\[|\\]",""));
             tvTitle.setText(R.string.freq_spam_add);
         });
 
         bCheck2.setOnClickListener(v12 -> {
-            resFreqAdd = fm.countMsgbyContent(getContext(),row);
+            resFreqAdd = fm.countMsgbyContent(getContext(),row,countAll);
             etResult.setText(Utils.arrayToString(resFreqAdd).replaceAll("\\[|\\]",""));
             tvTitle.setText(R.string.freq_spam_content);
         });
@@ -91,8 +90,10 @@ public class CheckFragment extends Fragment {
 
     public void cekInbox(){
         fm = new FilterMessages();
-        countAll = fm.countAllMsgbyAdd(getContext(),row);
+        countAll = fm.countAllMsgbyAdd(getContext(),row,1);
+        countToday = fm.countAllMsgbyAdd(getContext(),row,2);
         tvCountAll.setText(String.valueOf(countAll));
+        tvInboxToday.setText(String.valueOf(countToday));
     }
 
 }

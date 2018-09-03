@@ -63,10 +63,6 @@ public class MainActivity extends MainController {
         init();
         reqPermission();
 
-        String[] row = getResources().getStringArray(R.array.row);
-        FilterMessages fm = new FilterMessages();
-        int all = fm.countAllMsgbyAdd(getApplicationContext(),row);
-        System.out.println("=== cek all msg = " + all);
 
 //        test();
 //        scheduler();

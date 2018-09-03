@@ -21,8 +21,8 @@ public class Global {
     public static final String NAME_BUTTON_CHECK_ADD = "button cek add";
     public static final String NAME_MENU_EXIT = "menu exit";
 
-    public static final int PARAMS_COUNT_ADD = 10;
-    public static final int PARAMS_COUNT_CONT = 10;
+    public static final int PARAMS_COUNT_ADD = 5;
+    public static final int PARAMS_COUNT_CONT = 5;
     public static final int PARAMS_LENGTH_CONT = 5;
 
 
